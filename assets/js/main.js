@@ -22,7 +22,7 @@ document.getElementById('site-header').innerHTML = `
     <nav class="desktop-nav flex items-center gap-7" aria-label="Navigasi utama">
       ${navLink(navItems[0])}
       <div class="dropdown relative">
-        <button class="nav-link inline-flex items-center gap-1" id="about-toggle" aria-expanded="false">Tentang <span>⌄</span></button>
+        <button class="nav-link inline-flex items-center gap-1" id="about-toggle" aria-haspopup="true" aria-expanded="false">Tentang <svg class="dropdown-chevron" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="${pathPrefix}pages/profil.html">Profil organisasi</a>
           <a class="dropdown-item" href="${pathPrefix}pages/profil.html#visi">Visi dan misi</a>
@@ -38,7 +38,7 @@ document.getElementById('site-header').innerHTML = `
   <div id="mobile-panel" class="mobile-panel bg-white px-5 pb-4 dark:bg-slate-950 md:hidden">
     <nav class="container flex flex-col gap-1" aria-label="Navigasi mobile">
       ${navItems.map(navLink).join('')}
-      <div class="dropdown"><button class="nav-link py-3" id="mobile-about-toggle">Tentang ⌄</button><div class="dropdown-menu"><a class="dropdown-item" href="${pathPrefix}pages/profil.html">Profil organisasi</a><a class="dropdown-item" href="${pathPrefix}pages/profil.html#visi">Visi dan misi</a></div></div>
+      <div class="dropdown"><button class="nav-link inline-flex items-center gap-2 py-3" id="mobile-about-toggle" aria-expanded="false">Tentang <svg class="dropdown-chevron" aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="dropdown-menu"><a class="dropdown-item" href="${pathPrefix}pages/profil.html">Profil organisasi</a><a class="dropdown-item" href="${pathPrefix}pages/profil.html#visi">Visi dan misi</a></div></div>
     </nav>
   </div>
 </header>`;
@@ -65,8 +65,14 @@ themeToggle.addEventListener('click',()=>{root.classList.toggle('dark');localSto
 const mobileToggle=document.getElementById('mobile-toggle');
 const mobilePanel=document.getElementById('mobile-panel');
 mobileToggle.addEventListener('click',()=>{const opened=mobilePanel.classList.toggle('open');mobileToggle.setAttribute('aria-expanded',String(opened));mobileToggle.textContent=opened?'×':'☰';});
-document.getElementById('about-toggle')?.addEventListener('click',e=>{const parent=e.currentTarget.closest('.dropdown');parent.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(parent.classList.contains('open')));});
-document.getElementById('mobile-about-toggle')?.addEventListener('click',e=>e.currentTarget.closest('.dropdown').classList.toggle('open'));
+const desktopAboutDropdown=document.querySelector('.desktop-nav .dropdown');
+const desktopAboutToggle=document.getElementById('about-toggle');
+const updateDesktopAboutState=()=>desktopAboutToggle.setAttribute('aria-expanded',String(desktopAboutDropdown.matches(':hover, :focus-within')));
+desktopAboutDropdown?.addEventListener('pointerenter',updateDesktopAboutState);
+desktopAboutDropdown?.addEventListener('pointerleave',updateDesktopAboutState);
+desktopAboutDropdown?.addEventListener('focusin',updateDesktopAboutState);
+desktopAboutDropdown?.addEventListener('focusout',updateDesktopAboutState);
+document.getElementById('mobile-about-toggle')?.addEventListener('click',e=>{const parent=e.currentTarget.closest('.dropdown');const opened=parent.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(opened));});
 
 const header=document.getElementById('header');
 window.addEventListener('scroll',()=>header.classList.toggle('scrolled',window.scrollY>8),{passive:true});
